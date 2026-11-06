@@ -140,6 +140,16 @@
     "value": "-"
   },
   {
+    "field_name": "Validation Objective",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "Validates SDXL latency, images/s, and peak VRAM. Smoke uses reduced resolution and steps"
+  },
+  {
+    "field_name": "Command Tools Executed",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "Run scripts/collect_sdxl.py --backend sdxl. Every profile loads real SDXL; smoke uses reduced resolution and steps"
+  },
+  {
     "field_name": "run_benchmark Command Plus Options for Smoke Run (One minute or less)",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "bash run_benchmark.sh --smoke --validate --model-name sdxl-base-1.0 --precision fp16 --scheduler euler --prompt-source synthetic --image-resolution 64 --num-images 1 --num-inference-steps 2 --guidance-scale 0 --seed 42 --prompt-len 32 --batch-size 1"
@@ -155,16 +165,6 @@
     "value": "bash run_benchmark.sh --extended --validate --model-name sdxl-base-1.0 --precision fp16 --scheduler euler --prompt-source synthetic --image-resolution 1024 --num-images 72 --num-inference-steps 50 --guidance-scale 0 --seed 42 --prompt-len 32 --batch-size 1"
   },
   {
-    "field_name": "Validation Objective",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Validates SDXL image-generation latency, images/s, and peak VRAM. Every profile loads the real SDXL pipeline; smoke uses reduced resolution and steps"
-  },
-  {
-    "field_name": "Command Tools Executed",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run scripts/collect_sdxl.py --backend sdxl. Every profile loads real SDXL; smoke uses reduced resolution and steps"
-  },
-  {
     "field_name": "Command Execution Details and Purpose",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "Run scripts/collect_sdxl.py, which launches scripts/infer_sdxl.py --backend sdxl twice. Every profile loads real SDXL; smoke uses reduced resolution and steps. Write pass1, pass2, and summary rows for latency, images/s, and peak VRAM, to measure SDXL image generation"
@@ -172,12 +172,12 @@
   {
     "field_name": "Command Methodology",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run scripts/collect_sdxl.py, which launches scripts/infer_sdxl.py --backend sdxl twice. Every profile loads real SDXL; smoke uses reduced resolution and steps. Write pass1, pass2, and summary rows for per-image latency, images per second, and peak VRAM. This is not TorchBench"
+    "value": "Run scripts/collect_sdxl.py, which launches scripts/infer_sdxl.py --backend sdxl twice. Every profile loads real SDXL; smoke uses reduced resolution and steps. Write pass1, pass2, and summary rows for per-image latency, images per second, and peak VRAM"
   },
   {
     "field_name": "Execution Description With Parameters",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Runs scripts/collect_sdxl.py, which launches scripts/infer_sdxl.py --backend sdxl twice. Every profile loads real SDXL; smoke uses reduced resolution and steps. precision, scheduler, image_resolution, num_images, num_inference_steps, guidance_scale, and seed come from yaml. Writes pass1, pass2, and summary rows. This is not TorchBench. output_format: csv"
+    "value": "Runs scripts/collect_sdxl.py, which launches scripts/infer_sdxl.py --backend sdxl twice. Every profile loads real SDXL; smoke uses reduced resolution and steps. precision, scheduler, image_resolution, num_images, num_inference_steps, guidance_scale, and seed come from yaml. Writes pass1, pass2, and summary rows. output_format: csv"
   },
   {
     "field_name": "Execution Domain",
@@ -412,7 +412,7 @@
   {
     "field_name": "Profile Parameter Values",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Parameters_SmokeBaselineExtend",
-    "value": "{\"model_name\": {\"smoke\": \"sdxl-base-1.0\", \"baseline\": \"sdxl-base-1.0\", \"extended\": \"sdxl-base-1.0\", \"notes\": \"\"}, \"precision\": {\"smoke\": \"fp16\", \"baseline\": \"fp16\", \"extended\": \"fp16\", \"notes\": \"\"}, \"scheduler\": {\"smoke\": \"euler\", \"baseline\": \"euler\", \"extended\": \"euler\", \"notes\": \"\"}, \"prompt_source\": {\"smoke\": \"synthetic\", \"baseline\": \"synthetic\", \"extended\": \"synthetic\", \"notes\": \"\"}, \"image_resolution\": {\"smoke\": \"64\", \"baseline\": \"512\", \"extended\": \"1024\", \"notes\": \"\"}, \"num_images\": {\"smoke\": \"1\", \"baseline\": \"32\", \"extended\": \"72\", \"notes\": \"00_75 H100 20260905: 7 images at 512/30 was 1:49 including load. baseline=50 ~3.5-5 min. Extended stays 7 at 1024/50. | 2026-09-10: retimed from ledger (extended observed 0:56 @ num_images=7, resolution 1024/steps 50) toward Gary's ~7 min target. Linear extrapolation from a single data point with uncertain fixed-cost (model load) vs marginal per-image cost -- verify on next run. | 2026-09-11 GARY_LEDGER (runtime_ledger_201_232): extended (53 images, this sheet's own 2026-09-10 retune) measured 4:26/4:31 (avg 4:29) across 2 live loop runs against a 'make at least 7 min' target -- still well under the floor. Rate ~0.197 images/s at 1024res/50 steps. Naive scale to 510s gives ~101; padded to 120 (~10:09 predicted) for load-overhead margin, same reasoning as 124. Baseline not flagged -- left unchanged. NOTE: supersedes the 2026-09-10 retiming note above -- that pass used a different observed sample and, for at least workload 220, appears to have targeted its stated duration as a floor to climb toward rather than the ceiling Gary actually asked for. | 2026-10-21 extended 120 -> 72; 224 and 424 now share one value (as 1xx/3xx do). Ledger-predicted extended runtime 24.04 ~7:06, 26.04 ~12:16 (limits: baseline 5:00, extended 15:00)\"}, \"num_inference_steps\": {\"smoke\": \"2\", \"baseline\": \"30\", \"extended\": \"50\", \"notes\": \"H100 2026-08-16 tiny denoiser 4x2000 -> 11s (0.39ms/step, no cached SDXL). Predict 4x130000 -> ~211s. Do not copy AMD 315000. Extended 370000 extrapolated ~10:00, not tested. 2026-08-22: real SDXL pipeline. Smoke stays 2 steps on the tiny local denoiser (no weight download). Baseline 30 and extended 50 are SDXL-typical inference steps, replacing TinyDenoiser-calibrated 315000/1010000.\"}, \"guidance_scale\": {\"smoke\": \"0\", \"baseline\": \"0\", \"extended\": \"0\", \"notes\": \"\"}, \"seed\": {\"smoke\": \"42\", \"baseline\": \"42\", \"extended\": \"42\", \"notes\": \"\"}, \"prompt_len\": {\"smoke\": \"32\", \"baseline\": \"32\", \"extended\": \"32\", \"notes\": \"\"}, \"batch_size\": {\"smoke\": \"1\", \"baseline\": \"1\", \"extended\": \"1\", \"notes\": \"\"}}"
+    "value": "{\"model_name\": {\"smoke\": \"sdxl-base-1.0\", \"baseline\": \"sdxl-base-1.0\", \"extended\": \"sdxl-base-1.0\"}, \"precision\": {\"smoke\": \"fp16\", \"baseline\": \"fp16\", \"extended\": \"fp16\"}, \"scheduler\": {\"smoke\": \"euler\", \"baseline\": \"euler\", \"extended\": \"euler\"}, \"prompt_source\": {\"smoke\": \"synthetic\", \"baseline\": \"synthetic\", \"extended\": \"synthetic\"}, \"image_resolution\": {\"smoke\": \"64\", \"baseline\": \"512\", \"extended\": \"1024\"}, \"num_images\": {\"smoke\": \"1\", \"baseline\": \"32\", \"extended\": \"72\"}, \"num_inference_steps\": {\"smoke\": \"2\", \"baseline\": \"30\", \"extended\": \"50\"}, \"guidance_scale\": {\"smoke\": \"0\", \"baseline\": \"0\", \"extended\": \"0\"}, \"seed\": {\"smoke\": \"42\", \"baseline\": \"42\", \"extended\": \"42\"}, \"prompt_len\": {\"smoke\": \"32\", \"baseline\": \"32\", \"extended\": \"32\"}, \"batch_size\": {\"smoke\": \"1\", \"baseline\": \"1\", \"extended\": \"1\"}}"
   },
   {
     "field_name": "Profile Command Authorship",
